@@ -1,0 +1,7 @@
+{
+  "framework": "vite",
+  "installCommand": "cd miplatita && npm install",
+  "buildCommand": "cd miplatita && npm run build",
+  "outputDirectory": "miplatita/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
