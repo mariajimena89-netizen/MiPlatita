@@ -1,0 +1,234 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", sans-serif;
+
+  /* Color Palette */
+  --color-lime-volt: #87ea5c;
+  --color-forest-ink: #083400;
+  --color-volt-yellow: #ffea4b;
+  --color-papaya: #ffbd89;
+  --color-cotton-candy: #ffd5f0;
+  --color-aubergine-night: #2a0831;
+  --color-crimson-depth: #370305;
+  --color-fog: #58717a;
+  --color-positive: #008026;
+  --color-negative: #cf2929;
+  --color-warning: #9a6500;
+  --color-accent-blue: #0097c7;
+
+  --color-surface: #f9f9f9;
+  --color-surface-dim: #dadada;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f3f4;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #404a39;
+
+  /* Card Radius - custom responsive giant curve */
+  --radius-card: 48px;
+  --radius-card-mobile: 24px;
+}
+
+@utility font-display-hero {
+  font-family: 'Sora', sans-serif;
+  font-size: 120px;
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+}
+
+@utility font-display-hero-mobile {
+  font-family: 'Sora', sans-serif;
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+@utility font-headline-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 72px;
+  font-weight: 600;
+  line-height: 1.0;
+  letter-spacing: -2.16px;
+}
+
+@utility font-headline-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 58px;
+  font-weight: 600;
+  line-height: 1.03;
+  letter-spacing: -1.39px;
+}
+
+@utility font-headline-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 45px;
+  font-weight: 600;
+  line-height: 1.17;
+  letter-spacing: -0.5px;
+}
+
+@utility font-title-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.18px;
+}
+
+@utility font-title-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.12px;
+}
+
+@utility font-body-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.44;
+  letter-spacing: -0.09px;
+}
+
+@utility font-body-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.50;
+  letter-spacing: -0.08px;
+}
+
+@utility font-label-caps {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Escala UI unificada (plan 2026-07-22) */
+@utility font-page-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.625rem; /* 26px mobile */
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+@utility font-section-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+@utility type-meta {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-fog);
+}
+
+@utility type-body-ui {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 48px;
+  padding-inline: 1.5rem;
+  border-radius: 9999px;
+  background-color: var(--color-forest-ink);
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+@utility btn-primary-md {
+  min-height: 44px;
+}
+
+@utility btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 40px;
+  padding-inline: 1.25rem;
+  border-radius: 9999px;
+  background-color: var(--color-forest-ink);
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+@utility chip-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@utility ui-filter-control {
+  height: 40px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@utility ui-input {
+  height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@utility ui-input-hero {
+  min-height: 56px;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+

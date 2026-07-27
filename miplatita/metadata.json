@@ -1,0 +1,6 @@
+{
+  "name": "MiPlatita",
+  "description": "Controlador de gastos fijos y tarjetas de alto impacto visual con diseño de alto contraste.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

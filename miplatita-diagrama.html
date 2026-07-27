@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiPlatita — Mapa de pantallas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f3f3f4;
+      color: #083400;
+      padding: 2rem 1.5rem;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 2rem; letter-spacing: -0.02em; }
+    .intro { color: #58717a; margin: 0.5rem 0 2.5rem; font-size: 1rem; }
+
+    section { margin-bottom: 2.5rem; }
+    h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #58717a;
+      margin-bottom: 1rem;
+    }
+
+    /* App summary card */
+    .summary {
+      background: #87ea5c;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .summary p { font-size: 1rem; }
+
+    /* Screen cards */
+    .screens { display: flex; flex-direction: column; gap: 1rem; }
+
+    .screen {
+      background: #fff;
+      border: 2px solid #eeeeee;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .screen-header {
+      background: #083400;
+      color: #87ea5c;
+      padding: 0.75rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .screen-header span { font-size: 0.7rem; color: #fff; opacity: 0.7; font-weight: 400; }
+    .screen-body { padding: 1.25rem; }
+    .screen-body p { color: #58717a; font-size: 0.9rem; margin-bottom: 0.75rem; }
+
+    .blocks { display: flex; flex-direction: column; gap: 0.5rem; }
+    .block {
+      background: #f3f3f4;
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      border-left: 4px solid #87ea5c;
+    }
+    .block.alt { border-left-color: #083400; }
+
+    /* Navigation map */
+    .nav-map {
+      background: #fff;
+      border: 2px solid #eeeeee;
+      border-radius: 20px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .nav-item {
+      background: #083400;
+      color: #87ea5c;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .nav-item.center {
+      background: #87ea5c;
+      color: #083400;
+      border: 2px solid #083400;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      padding: 0;
+    }
+    .nav-note { font-size: 0.85rem; color: #58717a; }
+
+    /* Flow - simple arrows */
+    .flow-simple {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .flow-item {
+      background: #fff;
+      border: 2px solid #eeeeee;
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .flow-icon {
+      background: #87ea5c;
+      color: #083400;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    .flow-text strong { display: block; margin-bottom: 0.2rem; }
+    .flow-text span { font-size: 0.85rem; color: #58717a; }
+
+    /* Example expenses - visual list */
+    .expense-list {
+      background: #fff;
+      border: 2px solid #eeeeee;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .expense-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #eeeeee;
+      font-size: 0.85rem;
+    }
+    .expense-row:last-child { border-bottom: none; }
+    .expense-name { font-weight: 600; }
+    .expense-meta { color: #58717a; font-size: 0.78rem; }
+    .tag-paid { color: #008026; font-weight: 600; font-size: 0.75rem; }
+    .tag-pending { color: #c62828; font-weight: 600; font-size: 0.75rem; }
+    .totals {
+      background: #083400;
+      color: #87ea5c;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+
+    /* Modal callout */
+    .modal-box {
+      background: #fff;
+      border: 2px dashed #58717a;
+      border-radius: 20px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    .modal-box h3 { font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .modal-box p { font-size: 0.85rem; color: #58717a; }
+  </style>
+</head>
+<body>
+
+  <h1>MiPlatita</h1>
+  <p class="intro">Mapa visual de la app — pensado para diseño de interfaz</p>
+
+  <div class="summary">
+    <p><strong>¿Qué es?</strong> Una app para llevar el control de gastos personales. El usuario ve cuánto gastó, cuánto le queda del presupuesto mensual y puede registrar cada movimiento.</p>
+  </div>
+
+  <!-- NAVIGATION -->
+  <section>
+    <h2>Cómo se navega</h2>
+    <div class="nav-map">
+      <p class="nav-note" style="margin-bottom:1rem">En desktop: menú superior con pestañas. En mobile: barra fija abajo con botón "+" central.</p>
+      <div class="nav-bar">
+        <div class="nav-item">Dashboard</div>
+        <div class="nav-item">Gastos</div>
+        <div class="nav-item center">+</div>
+        <div class="nav-item">Análisis</div>
+        <div class="nav-item">Perfil</div>
+      </div>
+      <p class="nav-note">El botón <strong>+</strong> abre el formulario para cargar un gasto nuevo (desde cualquier pantalla).</p>
+    </div>
+  </section>
+
+  <!-- SCREENS -->
+  <section>
+    <h2>Las 4 pantallas</h2>
+    <div class="screens">
+
+      <div class="screen">
+        <div class="screen-header">
+          Dashboard
+          <span>Pantalla principal · vista completa</span>
+        </div>
+        <div class="screen-body">
+          <p>Es la home. Resume todo de un vistazo.</p>
+          <div class="blocks">
+            <div class="block">Tarjeta verde grande — % del presupuesto usado + barra de progreso</div>
+            <div class="block alt">4 mini tarjetas — Gasto total · Pagado · Pendiente · Disponible</div>
+            <div class="block">Tabla de gastos — lista con buscador, filtros y estados (pagado / pendiente)</div>
+            <div class="block alt">Grid de rubros — tarjeta por categoría (Vivienda, Ocio, etc.) con % y monto</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen">
+        <div class="screen-header">
+          Gastos
+          <span>Solo la lista</span>
+        </div>
+        <div class="screen-body">
+          <p>Misma tabla del dashboard, pero a pantalla completa. Enfocada en buscar, filtrar y editar gastos.</p>
+          <div class="blocks">
+            <div class="block">Tabla de transacciones con acciones: marcar pagado, eliminar, restaurar datos demo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen">
+        <div class="screen-header">
+          Análisis
+          <span>Vista de categorías</span>
+        </div>
+        <div class="screen-body">
+          <p>Desglose visual de en qué rubros se va la plata.</p>
+          <div class="blocks">
+            <div class="block">Tarjetas por categoría con icono, monto acumulado y % del total</div>
+            <div class="block alt">Opción para agregar un rubro nuevo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen">
+        <div class="screen-header">
+          Perfil
+          <span>Configuración</span>
+        </div>
+        <div class="screen-body">
+          <p>Ajustes del usuario y del presupuesto.</p>
+          <div class="blocks">
+            <div class="block">Tarjeta de usuario (avatar + nombre)</div>
+            <div class="block alt">Campo para cambiar el presupuesto mensual (ej. $2.000)</div>
+            <div class="block">Botones: restaurar datos de ejemplo · borrar todo</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-box">
+      <h3>Popup: Registrar gasto</h3>
+      <p>Se superpone sobre cualquier pantalla. Campos: nombre del gasto, rubro, monto, estado (pagado o pendiente). Al confirmar, el gasto aparece arriba de la lista.</p>
+    </div>
+  </section>
+
+  <!-- USER FLOWS -->
+  <section>
+    <h2>Qué pasa cuando el usuario interactúa</h2>
+    <div class="flow-simple">
+
+      <div class="flow-item">
+        <div class="flow-icon">1</div>
+        <div class="flow-text">
+          <strong>Abre la app por primera vez</strong>
+          <span>Ve 7 gastos de ejemplo y un presupuesto de $2.000. Los números de las tarjetas se calculan solos a partir de esa lista.</span>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-icon">2</div>
+        <div class="flow-text">
+          <strong>Toca "Registrar gasto" (+)</strong>
+          <span>Completa el formulario → el gasto nuevo aparece primero en la tabla → se actualizan la tarjeta verde, los 4 KPIs y el análisis por rubro.</span>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-icon">3</div>
+        <div class="flow-text">
+          <strong>Marca un gasto como pagado o pendiente</strong>
+          <span>Cambia el estado visual (verde / rojo) y recalcula cuánto está pagado vs. pendiente en el dashboard.</span>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-icon">4</div>
+        <div class="flow-text">
+          <strong>Cambia el presupuesto en Perfil</strong>
+          <span>El porcentaje de la tarjeta verde y el monto "Disponible" se ajustan al nuevo tope mensual.</span>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-icon">5</div>
+        <div class="flow-text">
+          <strong>Cierra y vuelve a abrir</strong>
+          <span>La app recuerda gastos, rubros, presupuesto y última pantalla visitada (no pierde lo que cargó).</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EXAMPLE DATA -->
+  <section>
+    <h2>Contenido de ejemplo (datos demo)</h2>
+    <div class="expense-list">
+      <div class="expense-row">
+        <div><div class="expense-name">Alquiler Departamento</div><div class="expense-meta">Vivienda</div></div>
+        <div><strong>$850</strong> · <span class="tag-paid">Pagado</span></div>
+      </div>
+      <div class="expense-row">
+        <div><div class="expense-name">Membresía Netflix</div><div class="expense-meta">Ocio</div></div>
+        <div><strong>$15</strong> · <span class="tag-pending">Pendiente</span></div>
+      </div>
+      <div class="expense-row">
+        <div><div class="expense-name">Seguro del Coche</div><div class="expense-meta">Transporte</div></div>
+        <div><strong>$120</strong> · <span class="tag-paid">Pagado</span></div>
+      </div>
+      <div class="expense-row">
+        <div><div class="expense-name">Internet Fibra 1GB</div><div class="expense-meta">Servicios</div></div>
+        <div><strong>$45</strong> · <span class="tag-paid">Pagado</span></div>
+      </div>
+      <div class="expense-row">
+        <div><div class="expense-name">Supermercado Semanal</div><div class="expense-meta">Alimentación</div></div>
+        <div><strong>$230</strong> · <span class="tag-paid">Pagado</span></div>
+      </div>
+      <div class="expense-row">
+        <div><div class="expense-name">Plan Teléfono Móvil</div><div class="expense-meta">Servicios</div></div>
+        <div><strong>$25</strong> · <span class="tag-pending">Pendiente</span></div>
+      </div>
+      <div class="expense-row">
+        <div><div class="expense-name">Membresía del Gimnasio</div><div class="expense-meta">Salud</div></div>
+        <div><strong>$40</strong> · <span class="tag-pending">Pendiente</span></div>
+      </div>
+      <div class="totals">
+        <span>Total gastado: $1.325</span>
+        <span>Pagado: $1.245</span>
+        <span>Pendiente: $80</span>
+        <span>Presupuesto: $2.000 (~66% usado)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESIGN TOKENS -->
+  <section>
+    <h2>Colores de la interfaz</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;">
+      <div style="text-align:center;font-size:0.78rem;">
+        <div style="width:64px;height:64px;background:#87ea5c;border-radius:12px;border:2px solid #083400;margin-bottom:0.35rem;"></div>
+        Verde principal<br>#87ea5c
+      </div>
+      <div style="text-align:center;font-size:0.78rem;">
+        <div style="width:64px;height:64px;background:#083400;border-radius:12px;margin-bottom:0.35rem;"></div>
+        Verde oscuro<br>#083400
+      </div>
+      <div style="text-align:center;font-size:0.78rem;">
+        <div style="width:64px;height:64px;background:#58717a;border-radius:12px;margin-bottom:0.35rem;"></div>
+        Texto secundario<br>#58717a
+      </div>
+      <div style="text-align:center;font-size:0.78rem;">
+        <div style="width:64px;height:64px;background:#eeeeee;border-radius:12px;border:1px solid #ddd;margin-bottom:0.35rem;"></div>
+        Fondos y bordes<br>#eeeeee
+      </div>
+    </div>
+    <p style="margin-top:1rem;font-size:0.85rem;color:#58717a;">Tipografías: <strong>Sora</strong> para títulos y números grandes · <strong>Inter</strong> para textos y formularios</p>
+  </section>
+
+</body>
+</html>

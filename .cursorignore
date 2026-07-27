@@ -1,0 +1,7 @@
+node_modules/
+miplatita/node_modules/
+dist/
+miplatita/dist/
+*.zip
+package-lock.json
+miplatita/package-lock.json
