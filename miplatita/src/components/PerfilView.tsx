@@ -8,18 +8,18 @@ import {
   EyeOff,
   Shield,
   Wallet,
+  LogOut,
 } from 'lucide-react';
 import {
-  hasStoredPassword,
-  savePassword,
-  verifyPassword,
-  clearPassword,
   getLockOnOpen,
   setLockOnOpen,
-  markSessionUnlocked,
+  clearSessionUnlock,
 } from '../authStorage';
+import { changeAccountPassword } from '../accountAuth';
 
 interface PerfilViewProps {
+  userEmail: string;
+  onLogout: () => void;
   incomeARS: number;
   incomeUSD: number;
   onUpdateIncomeARS: (value: number) => void;
@@ -31,6 +31,8 @@ interface PerfilViewProps {
 }
 
 export const PerfilView: React.FC<PerfilViewProps> = ({
+  userEmail,
+  onLogout,
   incomeARS,
   incomeUSD,
   onUpdateIncomeARS,
@@ -50,7 +52,6 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
     setTempIncomeUSD(incomeUSD.toString());
   }, [incomeARS, incomeUSD, activePeriod]);
 
-  const [hasPassword, setHasPassword] = useState(() => hasStoredPassword());
   const [lockOnOpen, setLockOnOpenState] = useState(() => getLockOnOpen());
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -88,50 +89,35 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
     e.preventDefault();
     setSecurityError('');
 
-    if (newPassword.length < 4) {
-      setSecurityError('Mínimo 4 caracteres');
-      return;
-    }
     if (newPassword !== confirmPassword) {
       setSecurityError('Las contraseñas no coinciden');
       return;
     }
-    if (hasPassword && !verifyPassword(currentPassword)) {
-      setSecurityError('Contraseña actual incorrecta');
+
+    const result = changeAccountPassword(userEmail, currentPassword, newPassword);
+    if (result.ok === false) {
+      setSecurityError(result.error);
       return;
     }
 
-    savePassword(newPassword);
-    setHasPassword(true);
-    setLockOnOpenState(getLockOnOpen());
-    markSessionUnlocked();
     setNewPassword('');
     setConfirmPassword('');
     setCurrentPassword('');
-    flashSecurity(hasPassword ? 'Contraseña actualizada' : 'Contraseña creada');
+    flashSecurity('Contraseña de cuenta actualizada');
   };
 
   const handleToggleLock = () => {
-    if (!hasPassword) return;
     const next = !lockOnOpen;
     setLockOnOpen(next);
     setLockOnOpenState(next);
-    flashSecurity(next ? 'Se pedirá al abrir la app' : 'Acceso directo al abrir');
-  };
-
-  const handleRemovePassword = () => {
-    if (!hasPassword) return;
-    if (!verifyPassword(currentPassword)) {
-      setSecurityError('Ingresá la contraseña actual para eliminarla');
-      return;
+    if (next) {
+      clearSessionUnlock();
     }
-    clearPassword();
-    setHasPassword(false);
-    setLockOnOpenState(false);
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    flashSecurity('Contraseña eliminada');
+    flashSecurity(
+      next
+        ? 'Se pedirá la contraseña de tu cuenta al abrir'
+        : 'No se pedirá contraseña al abrir',
+    );
   };
 
   return (
@@ -143,13 +129,13 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
       {/* 1 — Identidad (compacta, horizontal) */}
       <div className="bg-white border border-surface-container-high rounded-[24px] md:rounded-[28px] px-4 py-3.5 md:px-5 md:py-4 flex items-center gap-3.5 md:gap-4 min-w-0">
         <div className="w-12 h-12 md:w-14 md:h-14 bg-lime-volt text-forest-ink rounded-full flex items-center justify-center font-display text-xl md:text-2xl font-black border-[3px] border-forest-ink shrink-0">
-          J
+          {userEmail.charAt(0).toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="text-base md:text-lg font-bold text-forest-ink leading-tight truncate">
-            Jimena &quot;Jime&quot;
+            Cuenta
           </h3>
-          <p className="type-meta truncate mt-0.5">jime@demo.miplatita.app</p>
+          <p className="type-meta truncate mt-0.5">{userEmail}</p>
         </div>
         <div className="shrink-0 text-right pl-2 border-l border-surface-container-high">
           <span className="type-meta block">Gastos</span>
@@ -254,7 +240,7 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
         </form>
       </div>
 
-      {/* 4 — Mi contraseña */}
+      {/* 4 — Mi contraseña (misma del login) */}
       <div className="bg-white border border-surface-container-high p-5 md:p-6 flex flex-col gap-4 rounded-[24px] md:rounded-[28px]">
         <div className="flex items-center gap-2">
           <Shield className="w-4 h-4 text-forest-ink" />
@@ -262,30 +248,29 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
         </div>
 
         <p className="type-meta leading-relaxed">
-          {hasPassword
-            ? 'Hay una contraseña configurada para esta app (demo local).'
-            : 'Creá una contraseña para proteger el acceso a MiPlatita en este dispositivo.'}
+          Es la misma contraseña con la que iniciás sesión ({userEmail}). Mínimo 6 caracteres.
         </p>
 
         <form onSubmit={handleSavePassword} className="flex flex-col gap-3">
-          {hasPassword && (
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="current-pw" className="font-label-caps text-fog">Contraseña actual</label>
-              <input
-                id="current-pw"
-                type={showPassword ? 'text' : 'password'}
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="ui-input w-full bg-surface-container-low border border-surface-container-high rounded-full px-4 text-forest-ink focus:outline-none focus:border-lime-volt focus:ring-2 focus:ring-lime-volt/20"
-                placeholder="Actual"
-                autoComplete="current-password"
-              />
-            </div>
-          )}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="current-pw" className="font-label-caps text-fog">
+              Contraseña actual
+            </label>
+            <input
+              id="current-pw"
+              type={showPassword ? 'text' : 'password'}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="ui-input w-full bg-surface-container-low border border-surface-container-high rounded-full px-4 text-forest-ink focus:outline-none focus:border-lime-volt focus:ring-2 focus:ring-lime-volt/20"
+              placeholder="Actual"
+              autoComplete="current-password"
+              required
+            />
+          </div>
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="new-pw" className="font-label-caps text-fog">
-              {hasPassword ? 'Nueva contraseña' : 'Contraseña'}
+              Nueva contraseña
             </label>
             <div className="relative">
               <input
@@ -294,8 +279,10 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="ui-input w-full bg-surface-container-low border border-surface-container-high rounded-full px-4 pr-11 text-forest-ink focus:outline-none focus:border-lime-volt focus:ring-2 focus:ring-lime-volt/20"
-                placeholder="Mín. 4 caracteres"
+                placeholder="Mín. 6 caracteres"
                 autoComplete="new-password"
+                required
+                minLength={6}
               />
               <button
                 type="button"
@@ -309,7 +296,9 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="confirm-pw" className="font-label-caps text-fog">Confirmar</label>
+            <label htmlFor="confirm-pw" className="font-label-caps text-fog">
+              Confirmar
+            </label>
             <input
               id="confirm-pw"
               type={showPassword ? 'text' : 'password'}
@@ -318,6 +307,8 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
               className="ui-input w-full bg-surface-container-low border border-surface-container-high rounded-full px-4 text-forest-ink focus:outline-none focus:border-lime-volt focus:ring-2 focus:ring-lime-volt/20"
               placeholder="Repetí la contraseña"
               autoComplete="new-password"
+              required
+              minLength={6}
             />
           </div>
 
@@ -334,45 +325,46 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
             </motion.p>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-2 pt-1">
-            <button type="submit" className="btn-secondary hover:bg-forest-ink/90 flex-1">
-              {hasPassword ? 'Actualizar contraseña' : 'Crear contraseña'}
-            </button>
-            {hasPassword && (
-              <button
-                type="button"
-                onClick={handleRemovePassword}
-                className="btn-secondary flex-1 bg-surface-container text-forest-ink hover:bg-surface-container-high"
-              >
-                Quitar contraseña
-              </button>
-            )}
-          </div>
+          <button type="submit" className="btn-secondary hover:bg-forest-ink/90 w-full">
+            Actualizar contraseña
+          </button>
         </form>
 
-        {hasPassword && (
-          <div className="flex items-center justify-between gap-3 pt-3 border-t border-surface-container-high">
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-forest-ink">Pedir al abrir</p>
-              <p className="type-meta">Bloquea la app al iniciar o recargar</p>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={lockOnOpen}
-              onClick={handleToggleLock}
-              className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer shrink-0 ${
-                lockOnOpen ? 'bg-forest-ink' : 'bg-surface-container-high'
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
-                  lockOnOpen ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
-            </button>
+        <div className="flex items-center justify-between gap-3 pt-3 border-t border-surface-container-high">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-forest-ink">Pedir al abrir</p>
+            <p className="type-meta">Vuelve a pedir la contraseña de tu cuenta al recargar</p>
           </div>
-        )}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={lockOnOpen}
+            onClick={handleToggleLock}
+            className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-volt ${
+              lockOnOpen ? 'bg-forest-ink' : 'bg-surface-container-high'
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+                lockOnOpen ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+
+        <div className="pt-3 border-t border-surface-container-high">
+          <button
+            type="button"
+            onClick={onLogout}
+            className="btn-secondary w-full inline-flex items-center justify-center gap-2 bg-surface-container text-forest-ink hover:bg-surface-container-high focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-volt"
+          >
+            <LogOut className="w-3.5 h-3.5" aria-hidden />
+            Cerrar sesión
+          </button>
+          <p className="type-meta text-center mt-2">
+            Volvés a la pantalla de ingreso con tu correo
+          </p>
+        </div>
       </div>
 
       <div className="bg-surface-container-low border border-surface-container-high p-4 rounded-2xl flex items-start gap-3">
@@ -380,7 +372,7 @@ export const PerfilView: React.FC<PerfilViewProps> = ({
         <div>
           <span className="text-sm font-semibold text-forest-ink block">Privacidad local</span>
           <p className="type-meta mt-0.5 leading-relaxed">
-            Datos y contraseña viven en tu navegador (localStorage). Demo académica, no producción.
+            Cuenta, datos y bloqueo viven en tu navegador (localStorage). Demo académica V1, no producción.
           </p>
         </div>
       </div>

@@ -23,7 +23,13 @@ import { AddExpenseModal } from './components/AddExpenseModal';
 import { AnalisisView } from './components/AnalisisView';
 import { PerfilView } from './components/PerfilView';
 import { AppLockScreen } from './components/AppLockScreen';
-import { shouldShowLockScreen } from './authStorage';
+import { AuthScreen } from './components/AuthScreen';
+import { shouldShowLockScreen, markSessionUnlocked, clearSessionUnlock } from './authStorage';
+import {
+  getSessionEmail,
+  isAccountLoggedIn,
+  logoutAccount,
+} from './accountAuth';
 import {
   normalizeExpenses,
   sumAmount,
@@ -60,7 +66,10 @@ function loadIncomeMap(): PeriodIncomeMap {
 
 export default function App() {
   // --- STATE ---
-  const [isLocked, setIsLocked] = useState(() => shouldShowLockScreen());
+  const [accountEmail, setAccountEmail] = useState<string | null>(() => getSessionEmail());
+  const [isLocked, setIsLocked] = useState(() =>
+    shouldShowLockScreen(Boolean(getSessionEmail())),
+  );
 
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     const saved = localStorage.getItem('miplatita_tab');
@@ -268,8 +277,32 @@ export default function App() {
     window.setTimeout(() => setRegistrationToast(null), 2500);
   };
 
+  const handleLogout = () => {
+    logoutAccount();
+    clearSessionUnlock();
+    setAccountEmail(null);
+    setIsLocked(false);
+  };
+
+  if (!accountEmail || !isAccountLoggedIn()) {
+    return (
+      <AuthScreen
+        onAuthenticated={(email) => {
+          markSessionUnlocked();
+          setAccountEmail(email);
+          setIsLocked(false);
+        }}
+      />
+    );
+  }
+
   if (isLocked) {
-    return <AppLockScreen onUnlocked={() => setIsLocked(false)} />;
+    return (
+      <AppLockScreen
+        email={accountEmail}
+        onUnlocked={() => setIsLocked(false)}
+      />
+    );
   }
 
   return (
@@ -461,6 +494,8 @@ export default function App() {
             {activeTab === 'perfil' && (
               /* --- PERFIL VIEW --- */
               <PerfilView
+                userEmail={accountEmail}
+                onLogout={handleLogout}
                 incomeARS={incomeARS}
                 incomeUSD={incomeUSD}
                 onUpdateIncomeARS={handleUpdateIncomeARS}

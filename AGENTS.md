@@ -57,21 +57,24 @@ Permitir registrar gastos rápido, ver métricas de presupuesto y analizar por r
 
 ```
 miplatita/src/
-├── App.tsx          # Estado global, tabs, cálculos, localStorage, toast registro
+├── App.tsx          # Auth gate, tabs, cálculos, localStorage, toast registro
+├── accountAuth.ts   # Login/registro email+password (local V1)
 ├── data.ts          # INITIAL_EXPENSES, AVAILABLE_CATEGORIES, iconos
 ├── types.ts         # Expense, ActiveTab
+├── DemoDay.tsx      # Presentación /demo-day (aislada)
 └── components/
+    ├── AuthScreen.tsx       # Login / crear cuenta
     ├── MainMetric.tsx       # Tarjeta verde % presupuesto
     ├── StatCards.tsx        # 4 KPIs
     ├── ExpenseTable.tsx     # Tabla: preview (Dashboard) / full+filtros (Gastos)
     ├── CategoryAnalysis.tsx # Grid rubros (sin uso en Dashboard; Análisis usa AnalisisView)
     ├── AddExpenseModal.tsx  # Registro: monto ARS + categoría + estado
     ├── AnalisisView.tsx     # Pantalla Análisis (layout asimétrico)
-    └── PerfilView.tsx       # Presupuesto + reset demo
+    └── PerfilView.tsx       # Presupuesto, logout, bloqueo local
 ```
 
-**Estado en App.tsx:** `expenses`, `categories`, `totalBudget`, `activeTab`, `isAddExpenseOpen`, `registrationToast`.
-**localStorage keys:** `miplatita_expenses`, `miplatita_categories`, `miplatita_budget`, `miplatita_tab`, `miplatita_password`, `miplatita_lock_on_open` (+ session `miplatita_session_ok`).
+**Estado en App.tsx:** `accountEmail`, `expenses`, `categories`, `activeTab`, `isAddExpenseOpen`, `registrationToast`.
+**localStorage keys:** `miplatita_expenses`, `miplatita_categories`, `miplatita_budget`, `miplatita_tab`, `miplatita_password`, `miplatita_lock_on_open`, `miplatita_accounts`, `miplatita_account_session` (+ session `miplatita_session_ok`).
 
 ## Pantallas (ActiveTab)
 

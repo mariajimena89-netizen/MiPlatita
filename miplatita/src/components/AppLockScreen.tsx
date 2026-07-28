@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Lock, AlertTriangle } from 'lucide-react';
-import { verifyPassword, markSessionUnlocked } from '../authStorage';
+import { verifyAccountPassword } from '../accountAuth';
+import { markSessionUnlocked } from '../authStorage';
 
 interface AppLockScreenProps {
+  email: string;
   onUnlocked: () => void;
 }
 
-export const AppLockScreen: React.FC<AppLockScreenProps> = ({ onUnlocked }) => {
+export const AppLockScreen: React.FC<AppLockScreenProps> = ({ email, onUnlocked }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -18,7 +20,7 @@ export const AppLockScreen: React.FC<AppLockScreenProps> = ({ onUnlocked }) => {
       setError('Ingresá tu contraseña');
       return;
     }
-    if (!verifyPassword(password)) {
+    if (!verifyAccountPassword(email, password)) {
       setError('Contraseña incorrecta');
       return;
     }
@@ -39,7 +41,8 @@ export const AppLockScreen: React.FC<AppLockScreenProps> = ({ onUnlocked }) => {
           </div>
           <div>
             <h1 className="font-section-title text-forest-ink">MiPlatita</h1>
-            <p className="type-meta mt-1">Ingresá tu contraseña para continuar</p>
+            <p className="type-meta mt-1">Ingresá la contraseña de tu cuenta</p>
+            <p className="type-meta mt-0.5 truncate max-w-[260px] mx-auto">{email}</p>
           </div>
         </div>
 
@@ -71,7 +74,7 @@ export const AppLockScreen: React.FC<AppLockScreenProps> = ({ onUnlocked }) => {
         </form>
 
         <p className="type-meta text-center">
-          Demo local · la clave se guarda en este navegador
+          Es la misma contraseña del inicio de sesión
         </p>
       </motion.div>
     </div>
